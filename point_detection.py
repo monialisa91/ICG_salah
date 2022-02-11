@@ -10,20 +10,39 @@ class points():
         self.fs = fs
 
     def C_point_detection(self):
-        pan = pt(self.data_icg, self.fs)
-        data_pt = pan.fit()
-        peaks = find_peaks(data_pt, distance=150)[0]
-        values = data_pt[np.array(peaks)]
-        maksimum = np.sort(values)[-2:]
-        thr = 0.6 * np.mean(maksimum)
-        peaks_thr = np.where(values > thr)
-        peaks_thr2 = peaks[peaks_thr]
+        peaks = find_peaks(self.data_icg, distance=150, height=1)[0]
+        return peaks
 
-        plt.plot(np.arange(len(data_pt)), data_pt*1000)
-        # plt.plot(np.arange(len(self.data_icg)), self.data_icg)
-        plt.scatter(peaks_thr2, data_pt[peaks_thr2])
-        plt.axhline(thr)
-        plt.show()
+    def B_point_detection(self):
+        C_points = self.C_point_detection()
+        B_points = []
+        for i in range(len(C_points)):
+            k = C_points[i]
+            minimum = False
+            while(minimum == False):
+                f_point = self.data_icg[k]
+                n_point = self.data_icg[k-1] # next point
+                nn_point = self.data_icg[k-2] # next point after next
+                if(n_point < f_point and n_point < nn_point):
+                    minimum = True
+                    B_points.append(k-1)
+                k = k-1
+        return np.array(B_points)
 
-        return peaks_thr2-6
+
+    def X_point_detection(self):
+        C_points = self.C_point_detection()
+        X_points = []
+        for i in range(len(C_points)):
+            k = C_points[i]
+            minimum = False
+            while(minimum == False):
+                f_point = self.data_icg[k]
+                n_point = self.data_icg[k+1] # next point
+                nn_point = self.data_icg[k+2] # next point after next
+                if(n_point < f_point and n_point < nn_point):
+                    minimum = True
+                    X_points.append(k+1)
+                k = k+1
+        return np.array(X_points)
 

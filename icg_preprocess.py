@@ -9,15 +9,11 @@ from scipy.signal import savgol_filter as sg
 
 
 class icg_preprocess():
-    def __init__(self, file, lim, sampling_rate, cutoff_low, cutoff_high, order_low, order_high, radius=3):
+    def __init__(self, file, lim, sampling_rate, radius=3):
         self.file = file
         self.lim = lim
         self.radius = radius
         self.sampling_rate = sampling_rate
-        self.cutoff_low = cutoff_low
-        self.cutoff_high = cutoff_high
-        self.order_low = order_low
-        self.order_high = order_high
 
     def load_data(self):
         mat = loadmat(self.file)
@@ -38,7 +34,7 @@ class icg_preprocess():
 
         return means
 
-    def sg_filter(self, window_length=11, polyorder=4):
+    def sg_filter(self, window_length=31, polyorder=4):
         data = self.rolling_mean()
         data = sg(data, window_length, polyorder, mode='nearest')
         return data
